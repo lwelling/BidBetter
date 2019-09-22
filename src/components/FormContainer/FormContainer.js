@@ -50,42 +50,6 @@ class FormContainer extends React.Component {
            }))  
     }
 
-    handleBlueBook = e => {
-        const value = e.target.value;
-        const numVal = parseInt(value);
-        this.setState(prevState => ({ newVehicle : 
-             {...prevState.newVehicle, blueBook: numVal
-             }
-        }))
-    }
-
-    handleBlackBook = e => {
-        const value = e.target.value;
-        const numVal = parseInt(value);
-        this.setState( prevState => ({ newVehicle : 
-            {...prevState.newVehicle, blackBook: numVal
-            }
-        }))
-    }
-
-    handleNada = (e) => {
-        const value = e.target.value;
-        const numVal = parseInt(value);
-        this.setState( prevState => ({ newVehicle : 
-            {...prevState.newVehicle, nada: numVal
-            }
-        }))
-    }
-
-    handleMmr = (e) => {
-        const value = e.target.value;
-        const numVal = parseInt(value);
-        this.setState( prevState => ({ newVehicle : 
-            {...prevState.newVehicle, mmr: numVal
-            }
-        }))
-    }
-
     handleCondition = (e) => {
         const value = e.target.value;
         this.setState( prevState => ({newVehicle : 
