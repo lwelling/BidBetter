@@ -25,15 +25,9 @@ class FormContainer extends React.Component {
             conditionOptions: ['Scrap', 'Edgy', 'Average', 'Clean', 'Spotless']
         }
 
-        this.handleFormSubmit = this.handleFormSubmit.bind(this)
-        this.handleBlueBook = this.handleBlueBook.bind(this)
-        this.handleBlackBook = this.handleBlackBook.bind(this)
-        this.handleNada = this.handleNada.bind(this)
-        this.handleMmr = this.handleMmr.bind(this)
-        this.handleCondition = this.handleCondition.bind(this)
     }
 
-    handleFormSubmit(e) {
+    handleFormSubmit = (e) => {
         e.preventDefault()
         const bid = this.calculateBid();
         const toggle = this.state.visible
@@ -42,13 +36,13 @@ class FormContainer extends React.Component {
 
     }  
 
-    calculateBid(){
+    calculateBid = () => {
         const carCond = this.state.newVehicle.condition;
         const bid = (this.state.newVehicle.blueBook + this.state.newVehicle.blackBook + this.state.newVehicle.nada + this.state.newVehicle.mmr) / 4 - 700;
         return bid
     };
 
-    // handleFormChange(e) {
+    // handleFormChange = (e) => {
     //     let value = e.target.value
     //     let numVal = parseInt(value);
     //     let value = e.target.value;
@@ -58,7 +52,7 @@ class FormContainer extends React.Component {
     //        }))  
     // }
 
-    handleBlueBook(e) {
+    handleBlueBook = e => {
         const value = e.target.value;
         const numVal = parseInt(value);
         this.setState(prevState => ({ newVehicle : 
@@ -67,7 +61,7 @@ class FormContainer extends React.Component {
         }))
     }
 
-    handleBlackBook(e) {
+    handleBlackBook = e => {
         const value = e.target.value;
         const numVal = parseInt(value);
         this.setState( prevState => ({ newVehicle : 
@@ -76,7 +70,7 @@ class FormContainer extends React.Component {
         }))
     }
 
-    handleNada(e) {
+    handleNada = (e) => {
         const value = e.target.value;
         const numVal = parseInt(value);
         this.setState( prevState => ({ newVehicle : 
@@ -85,7 +79,7 @@ class FormContainer extends React.Component {
         }))
     }
 
-    handleMmr(e) {
+    handleMmr = (e) => {
         const value = e.target.value;
         const numVal = parseInt(value);
         this.setState( prevState => ({ newVehicle : 
@@ -94,13 +88,15 @@ class FormContainer extends React.Component {
         }))
     }
 
-    handleCondition(e) {
+    handleCondition = (e) => {
         const value = e.target.value;
         this.setState( prevState => ({newVehicle : 
             {...prevState.newVehicle, condition: value
             }
         }))
     }
+
+
 
     render(){
 
