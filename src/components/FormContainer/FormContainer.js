@@ -42,50 +42,12 @@ class FormContainer extends React.Component {
         return bid
     };
 
-    // handleFormChange = (e) => {
-    //     let value = e.target.value
-    //     let numVal = parseInt(value);
-    //     let value = e.target.value;
-    //     this.setState(prevState => ({ newVehicle : 
-    //          {...prevState.newVehicle, ???: numVal
-    //          }
-    //        }))  
-    // }
-
-    handleBlueBook = e => {
-        const value = e.target.value;
+    handleFormChange = (value, key) => {
         const numVal = parseInt(value);
         this.setState(prevState => ({ newVehicle : 
-             {...prevState.newVehicle, blueBook: numVal
+             {...prevState.newVehicle, [key]: numVal
              }
-        }))
-    }
-
-    handleBlackBook = e => {
-        const value = e.target.value;
-        const numVal = parseInt(value);
-        this.setState( prevState => ({ newVehicle : 
-            {...prevState.newVehicle, blackBook: numVal
-            }
-        }))
-    }
-
-    handleNada = (e) => {
-        const value = e.target.value;
-        const numVal = parseInt(value);
-        this.setState( prevState => ({ newVehicle : 
-            {...prevState.newVehicle, nada: numVal
-            }
-        }))
-    }
-
-    handleMmr = (e) => {
-        const value = e.target.value;
-        const numVal = parseInt(value);
-        this.setState( prevState => ({ newVehicle : 
-            {...prevState.newVehicle, mmr: numVal
-            }
-        }))
+           }))  
     }
 
     handleCondition = (e) => {
@@ -113,25 +75,25 @@ class FormContainer extends React.Component {
                         name= {'blueBook'}
                         value={this.state.newVehicle.blueBook} 
                         placeholder = {'Blue Book'}
-                        handleChange = {this.handleBlueBook}
+                        handleChange = {e => this.handleFormChange(e.target.value, 'blueBook')}
                     />
                     <Input type={'number'}
                         name= {'blackBook'}
                         value={this.state.newVehicle.blackBook} 
                         placeholder = {'Black Book'}
-                        handleChange = {this.handleBlackBook}
+                        handleChange = {e => this.handleFormChange(e.target.value, 'blackBook')}
                     />
                     <Input type={'number'}
                         name= {'nada'}
                         value={this.state.newVehicle.nada} 
                         placeholder = {'NADA'}
-                        handleChange = {this.handleNada}
+                        handleChange = {e => this.handleFormChange(e.target.value, 'nada')}
                     />
                     <Input type={'number'}
                         name= {'mmr'}
                         value={this.state.newVehicle.mmr} 
                         placeholder = {'MMR'}
-                        handleChange = {this.handleMmr}
+                        handleChange = {e => this.handleFormChange(e.target.value, 'mmr')}
                     />
                     <Select
                         name={'condition'}
