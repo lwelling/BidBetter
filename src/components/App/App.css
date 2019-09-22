@@ -1,0 +1,20 @@
+.form-container {
+    background-color: #EAF6FF;
+    border-style: solid;
+    border-color: #FFA400;
+    text-align: center;
+    width: 22rem;
+    font-family: 'Playfair Display', serif;
+    
+}
+
+html {
+    color: #FFA400;
+    font-family: 'Playfair Display', serif;
+}
+
+/* .flex-item {
+    display: flex;
+    flex-direction: row;
+
+} */
