@@ -12,11 +12,23 @@ class FormContainer extends React.Component {
 
         this.state = {
             newVehicle: {
-                blueBook: '',
-                blackBook: '',
-                nada: '',
-                mmr: '',
-                condition: ''
+                blueBook: {
+                    prettyName: 'Blue Book',
+                    value: '',
+                },
+                blackBook: {
+                    prettyName: 'Black Book',
+                    value: '',
+                },
+                nada: {
+                    prettyName: 'NADA',
+                    value: '',
+                },
+                mmr: {
+                    prettyName: 'MMR',
+                    value: '',
+                },
+                condition: '',
             },
 
             betterBid: '',
@@ -28,7 +40,7 @@ class FormContainer extends React.Component {
     }
 
     handleFormSubmit = (e) => {
-        e.preventDefault()
+        e.preventDefault();
         const bid = this.calculateBid();
         const toggle = this.state.visible
         this.setState({ visible: !toggle})
@@ -37,17 +49,21 @@ class FormContainer extends React.Component {
     }  
 
     calculateBid = () => {
-        const carCond = this.state.newVehicle.condition;
-        const bid = (this.state.newVehicle.blueBook + this.state.newVehicle.blackBook + this.state.newVehicle.nada + this.state.newVehicle.mmr) / 4 - 700;
+        const { blueBook, blackBook, nada, mmr, condition } = this.state.newVehicle;
+        const bid = (blueBook.value + blackBook.value + nada.value + mmr.value) / 4 - 700;
         return bid
     };
 
     handleFormChange = (value, key) => {
-        const numVal = parseInt(value);
-        this.setState(prevState => ({ newVehicle : 
-             {...prevState.newVehicle, [key]: numVal
-             }
-           }))  
+        value = +value;
+        this.setState(prevState => ({
+            newVehicle: {
+                ...prevState.newVehicle, 
+                [key]: { 
+                    value,
+                }
+            }
+        }));
     }
 
     handleCondition = (e) => {
@@ -60,7 +76,9 @@ class FormContainer extends React.Component {
 
 
 
-    render(){
+    render() {
+
+        const { newVehicle } = this.state;
 
         return (
             <div className='formContainer'>
@@ -71,30 +89,17 @@ class FormContainer extends React.Component {
                 </h2>
 
                 <form className='container' onSubmit={this.handleFormSubmit}>
-                    <Input type={'number'}
-                        name= {'blueBook'}
-                        value={this.state.newVehicle.blueBook} 
-                        placeholder = {'Blue Book'}
-                        handleChange = {e => this.handleFormChange(e.target.value, 'blueBook')}
-                    />
-                    <Input type={'number'}
-                        name= {'blackBook'}
-                        value={this.state.newVehicle.blackBook} 
-                        placeholder = {'Black Book'}
-                        handleChange = {e => this.handleFormChange(e.target.value, 'blackBook')}
-                    />
-                    <Input type={'number'}
-                        name= {'nada'}
-                        value={this.state.newVehicle.nada} 
-                        placeholder = {'NADA'}
-                        handleChange = {e => this.handleFormChange(e.target.value, 'nada')}
-                    />
-                    <Input type={'number'}
-                        name= {'mmr'}
-                        value={this.state.newVehicle.mmr} 
-                        placeholder = {'MMR'}
-                        handleChange = {e => this.handleFormChange(e.target.value, 'mmr')}
-                    />
+                    {
+                        Object.entries(newVehicle).map(([bookName, book], index) => bookName === 'condition' ? null : (
+                            <Input type={'number'}
+                                key={index}
+                                name={bookName}
+                                value={book.value}
+                                placeholder={book.prettyName}
+                                handleChange={e => this.handleFormChange(e.target.value, bookName)}
+                            />
+                        ))
+                    }
                     <Select
                         name={'condition'}
                         options = {this.state.conditionOptions} 
@@ -118,7 +123,5 @@ class FormContainer extends React.Component {
         )
     }
 }
-
-
 
 export default FormContainer;
