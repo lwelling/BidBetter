@@ -7,8 +7,12 @@ import BidResult from '../BidResult/BidResult';
 class App extends Component {
   state = {
     newVehicle: {
-      blueBook: {
-        prettyName: 'Blue Book',
+      miles: {
+        prettyName: 'Mileage',
+        value: '',
+      },
+      mmr: {
+        prettyName: 'MMR',
         value: '',
       },
       blackBook: {
@@ -19,30 +23,76 @@ class App extends Component {
         prettyName: 'NADA',
         value: '',
       },
-      mmr: {
-        prettyName: 'MMR',
+      blueBook: {
+        prettyName: 'Blue Book',
         value: '',
       },
-      condition: '',
+      condition: {
+        prettyName: 'How Nice?',
+        value: '',
+      },
+      blueBookLending: {
+        prettyName: 'Lending Value',
+        value: '',
+      }
     },
     betterBid: '',
     visible: false,
+  
   }
+
+  condFactor = () => {
+    const { condition } = this.state.newVehicle;
+    if(condition === 'Scrap'){
+      return 0.80
+    } else if(condition === 'Edgy'){
+      return 0.97
+    } else if(condition === 'Clean'){
+      return 1.005
+    } else if (condition === 'Spotless'){
+      return 1.06
+    } else {
+      return 1
+    }
+  }
+
+  calculateStandardDev = () => {
+    const { blueBook, blackBook, nada, mmr } = this.state.newVehicle;
+    const bookArray = [blueBook.value, blackBook.value, nada.value, mmr.value]
+    const reducer = (accumulator, currentValue) => accumulator + currentValue;
+    const avg = (bookArray.reduce(reducer))/bookArray.length;
+    const diffArray = bookArray.map(book => (Math.pow((book - avg), 2)));
+    let stdDev = (Math.sqrt((diffArray.reduce(reducer)) / diffArray.length)) * 1.25;
+    stdDev = +stdDev;
+    console.log(stdDev)
+    const booksAdj = bookArray.filter(function(book) {
+      return Math.abs(avg-(+book)) <= stdDev;
+    });
+    return booksAdj
+  }
+
+
+  
+  calculateBid = () => {
+    const { blueBookLending, mmr, miles} = this.state.newVehicle;
+    const booksAdj = this.calculateStandardDev();
+    const condFac = +this.condFactor();
+    console.log(`condFac: ${booksAdj}`)
+    const reducer = (accumulator, currentValue) => accumulator + currentValue;
+    const bidPreMiles = ((booksAdj.reduce(reducer)) /booksAdj.length) - 700;
+    console.log(`bidPreMiles: ${bidPreMiles}`)
+    const bidPreCond = (miles.value <= 150000) ? bidPreMiles : (mmr.value -700);
+    const bid = (bidPreCond * condFac).toFixed(2);
+    return (+bid + 1700 < +blueBookLending.value) ? bid : `${bid} **Might Be Too Close to KBB**`
+  };
 
   handleFormSubmit = (e) => {
     e.preventDefault();
-    const bid = this.calculateBid();
-    const toggle = this.state.visible
-    this.setState({ visible: !toggle })
-    this.setState({ betterBid: bid })
-
+    this.condFactor();
+    this.calculateStandardDev();
+    this.setState({ betterBid: this.calculateBid() });
+    this.setState({ visible: !(this.state.visible) });
   }
-
-  calculateBid = () => {
-    const { blueBook, blackBook, nada, mmr, condition } = this.state.newVehicle;
-    const bid = (blueBook.value + blackBook.value + nada.value + mmr.value) / 4 - 700;
-    return bid
-  };
 
   handleFormChange = (value, key) => {
     value = +value;

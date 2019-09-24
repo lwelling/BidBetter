@@ -5,7 +5,7 @@ class BBLogo extends React.Component {
     render() {
         return (
             <div className="shrink">
-                <img src={ require('./emblem1.png') } />
+                <img src={ require('./emblem1.png') } alt={'emblem'} />
             </div>
         )
     }

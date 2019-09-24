@@ -4,9 +4,17 @@
     flex-direction: column;
     justify-content: center;
     align-items: center;
-    padding: 10px;
     border-radius: 10px;
+    width: auto;
+    height: 100%
 }
+
+.visibleGroup {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+} 
+
 
 input {
     width: auto;
@@ -19,7 +27,7 @@ input:hover {
 }
 
 .form-group {
-    padding: 10px;
+    padding: 5px;
     width: auto;
 }
 
