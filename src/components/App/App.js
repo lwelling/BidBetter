@@ -58,7 +58,7 @@ class App extends Component {
     const {
       blackBook,
       blueBook,
-      // blueBookLending,
+      blueBookLending,
       condition,
       miles,
       mmr,
@@ -86,10 +86,10 @@ class App extends Component {
       ? meanValue(normalBooks) - 700
       : mmr.value - 700;
     console.log('bidBeforeCondition: ', bidBeforeCondition, typeof bidBeforeCondition);
-    const bid = (bidBeforeCondition * condFac).toFixed(2);
+    const bid = parseInt((bidBeforeCondition * condFac).toFixed(2));
     console.log('bid: ', bid, typeof bid);
-    return bid + 1700 < this.bblValue() ? bid : `${bid} **Might Be Too Close to KBB**`
-    // return bid + 1700 < +blueBookLending.value ? bid : `${bid} **Might Be Too Close to KBB**`
+    // return bid + 1700 < this.bblValue() ? bid : `${bid} **Might Be Too Close to KBB**`
+    return bid + 1700 < +blueBookLending.value ? bid : `${bid} **Might Be Too Close to KBB**`
   };
   
   handleCondition = condition => {

@@ -1,9 +1,9 @@
 
 export const meanValue = (numbersArray) => (numbersArray.reduce((acc, num) => acc + num) / numbersArray.length);
 
-export const squareDiffs = (values) => values.map(value => {
-  const diff = value - meanValue(values);
+export const squareDiffs = (valuesArray) => valuesArray.map(value => {
+  const diff = value - meanValue(valuesArray);
   return diff * diff;
 });
 
-export const standardDeviation = (data) => Math.sqrt(meanValue(squareDiffs(data)));
+export const standardDeviation = (dataArray) => Math.sqrt(meanValue(squareDiffs(dataArray)));
