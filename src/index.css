@@ -15,10 +15,17 @@ code {
 .appStyle {
   display: flex;
   justify-content: center;
-  padding-top: 2%;
+  padding-top: 7%;
 }
 
 img {
-  max-width:60%;
+  max-width:15%;
   height:auto;
+  padding-top: 2%;
 }
+
+/* App {
+  display: flex;
+  justify-content: center;
+  align-content: center;
+} */
