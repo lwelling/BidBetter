@@ -1,8 +1,11 @@
 import React, { Component } from 'react';
+
 import './App.css';
 import FormContainer from '../FormContainer/FormContainer'
 import BBLogo from '../BBLogo/BBLogo';
 import BidResult from '../BidResult/BidResult';
+
+import { meanValue, standardDeviation } from '../../utils/mathHelpers';
 
 class App extends Component {
   state = {
@@ -28,8 +31,9 @@ class App extends Component {
         value: '',
       },
       condition: {
-        prettyName: 'How Nice?',
-        value: '',
+        value: 'placeholder',
+        displayName: 'How Nice?',
+        multiplier: null,
       },
       blueBookLending: {
         prettyName: 'Lending Value',
@@ -38,60 +42,64 @@ class App extends Component {
     },
     betterBid: '',
     visible: false,
-  
   }
 
-  condFactor = () => {
-    const { condition } = this.state.newVehicle;
-    if(condition === 'Scrap'){
-      return 0.80
-    } else if(condition === 'Edgy'){
-      return 0.97
-    } else if(condition === 'Clean'){
-      return 1.005
-    } else if (condition === 'Spotless'){
-      return 1.06
-    } else {
-      return 1
-    }
+  removeOutliers = (books) => {
+    const bookValues = books.map(book => book.value);
+    const acceptableDeviation = 1.25 * standardDeviation(bookValues);
+    return bookValues.filter(book => Math.abs(meanValue(bookValues) - book) <= acceptableDeviation);
   }
 
-  calculateStandardDev = () => {
-    const { blueBook, blackBook, nada, mmr } = this.state.newVehicle;
-    const bookArray = [blueBook.value, blackBook.value, nada.value, mmr.value]
-    const reducer = (accumulator, currentValue) => accumulator + currentValue;
-    const avg = (bookArray.reduce(reducer))/bookArray.length;
-    const diffArray = bookArray.map(book => (Math.pow((book - avg), 2)));
-    let stdDev = (Math.sqrt((diffArray.reduce(reducer)) / diffArray.length)) * 1.25;
-    stdDev = +stdDev;
-    console.log(stdDev)
-    const booksAdj = bookArray.filter(function(book) {
-      return Math.abs(avg-(+book)) <= stdDev;
-    });
-    return booksAdj
+  bblValue = () => {
+    return Math.random() * 40000;
   }
-
-
   
   calculateBid = () => {
-    const { blueBookLending, mmr, miles} = this.state.newVehicle;
-    const booksAdj = this.calculateStandardDev();
-    const condFac = +this.condFactor();
-    console.log(`condFac: ${booksAdj}`)
-    const reducer = (accumulator, currentValue) => accumulator + currentValue;
-    const bidPreMiles = ((booksAdj.reduce(reducer)) /booksAdj.length) - 700;
-    console.log(`bidPreMiles: ${bidPreMiles}`)
-    const bidPreCond = (miles.value <= 150000) ? bidPreMiles : (mmr.value -700);
-    const bid = (bidPreCond * condFac).toFixed(2);
-    return (+bid + 1700 < +blueBookLending.value) ? bid : `${bid} **Might Be Too Close to KBB**`
-  };
+    const {
+      blackBook,
+      blueBook,
+      // blueBookLending,
+      condition,
+      miles,
+      mmr,
+      nada,
+    } = this.state.newVehicle;
 
-  handleFormSubmit = (e) => {
-    e.preventDefault();
-    this.condFactor();
-    this.calculateStandardDev();
-    this.setState({ betterBid: this.calculateBid() });
-    this.setState({ visible: !(this.state.visible) });
+    const normalBooks = this.removeOutliers([blackBook, blueBook, mmr, nada]);
+    // Leaving console.logs in cause they're nice to see when you're learning.
+    // But usually you don't want to push any code with console.logs still sitting around
+    console.log('this.state: ', this.state);
+    const condFac = condition.multiplier;
+    if (condFac === null) {
+      // TODO:
+      // condition hasn't been selected, throw error
+      return;
+    }
+    console.log('condFac: ', condFac);
+    console.log(`'normalBooks': ${normalBooks}`)
+    // const reducer = (accumulator, currentValue) => accumulator + currentValue;
+    // const bidPreMiles = ((normalBooks.reduce(reducer)) /normalBooks.length) - 700;
+    const bidPreMiles = meanValue(normalBooks) - 700;
+    console.log(`bidPreMiles: ${bidPreMiles}`)
+    // const bidPreCond = (miles.value <= 150000) ? bidPreMiles : (mmr.value -700);
+    const bidBeforeCondition = miles.value < 150000
+      ? meanValue(normalBooks) - 700
+      : mmr.value - 700;
+    console.log('bidBeforeCondition: ', bidBeforeCondition, typeof bidBeforeCondition);
+    const bid = (bidBeforeCondition * condFac).toFixed(2);
+    console.log('bid: ', bid, typeof bid);
+    return bid + 1700 < this.bblValue() ? bid : `${bid} **Might Be Too Close to KBB**`
+    // return bid + 1700 < +blueBookLending.value ? bid : `${bid} **Might Be Too Close to KBB**`
+  };
+  
+  handleCondition = condition => {
+    console.log('condition: ', condition);
+    this.setState(prevState => ({
+      newVehicle: {
+        ...prevState.newVehicle,
+        condition,
+      }
+    }));
   }
 
   handleFormChange = (value, key) => {
@@ -100,23 +108,21 @@ class App extends Component {
       newVehicle: {
         ...prevState.newVehicle,
         [key]: {
+          ...prevState.newVehicle[key],
           value,
         }
       }
     }));
   }
 
-  handleCondition = (e) => {
-    const value = e.target.value;
-    this.setState(prevState => ({
-      newVehicle:
-      {
-        ...prevState.newVehicle, condition: value
-      }
-    }))
+  handleFormSubmit = (e) => {
+    e.preventDefault();
+    this.setState({ betterBid: this.calculateBid() });
+    this.setState({ visible: !(this.state.visible) });
   }
 
   render() {
+    const { betterBid, newVehicle, visible } = this.state;
     return (
       <div className='form-container'>
         <BBLogo />
@@ -127,13 +133,13 @@ class App extends Component {
           handleSelect={this.handleCondition}
           handleInput={this.handleFormChange}
           handleSubmit={this.handleFormSubmit}
-          newVehicle={this.state.newVehicle}
+          newVehicle={newVehicle}
           classname="flex-item"
         />
         <span>
           <BidResult
-            visible={this.state.visible}
-            betterBid={this.state.betterBid}
+            visible={visible}
+            betterBid={betterBid}
           />
         </span>
       </div>
